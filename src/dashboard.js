@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './dashboard.css';
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
@@ -63,7 +64,10 @@ const Dashboard = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center text-white bg-gray-800 py-4 rounded">Dashboard Inventaris</h1>
+    {/* Tambahkan judul Inventaris Hub */}
+    <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">Inventaris Hub</h1>
+    
+    <h1 className="text-3xl font-bold mb-6 text-center text-white bg-gray-800 py-4 rounded">Dashboard Inventaris</h1>
       {products.length > 0 ? (
         <table className="table-auto w-full text-left bg-white shadow-md rounded mt-6">
           <thead className="bg-gray-800 text-white">
