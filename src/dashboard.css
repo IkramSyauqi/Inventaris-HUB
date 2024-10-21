@@ -3,7 +3,7 @@ table {
   border-collapse: collapse;
   background-color: white;
   margin-top: 3em; /* Tambahkan margin-top normal */
-  margin-right: 20em;
+  margin-right: -1em;
 }
 
 table th, table td {
@@ -31,3 +31,95 @@ table img {
   object-fit: cover;
   border-radius: 5px;
 }
+
+th {
+  text-align: center;
+}
+
+/* Styling untuk tombol */
+button {
+  display: flex;
+  justify-content: center; 
+  align-items: center;     
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+}
+
+button.bg-blue-500 {
+  background-color: #4299e1;
+}
+
+button.bg-blue-500:hover {
+  background-color: #3182ce;
+}
+
+button.bg-red-500 {
+  background-color: #f56565;
+}
+
+button.bg-red-500:hover {
+  background-color: #e53e3e;
+}
+
+.actions-buttons {
+  display: flex;
+  justify-content: center; 
+  gap: 8px; 
+}
+
+/* Styling modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+button.bg-gray-500 {
+  background-color: #f56565; 
+}
+
+button.bg-gray-500:hover {
+  background-color: #e53e3e; 
+}
+
+
