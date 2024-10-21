@@ -1,8 +1,5 @@
 # Inventaris Hub
 
 Cara menjalankan Program :
-
-""npm install""
-
-**npm run start**
-
+1. npm install
+2. npm run start
