@@ -8,8 +8,8 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState(null); // Produk yang sedang diedit
-  const [updatedProduct, setUpdatedProduct] = useState({}); // Data produk yang diedit
+  const [currentProduct, setCurrentProduct] = useState(null); 
+  const [updatedProduct, setUpdatedProduct] = useState({}); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,8 +51,8 @@ const Dashboard = () => {
 
   const handleEdit = (product) => {
     setCurrentProduct(product);
-    setUpdatedProduct({ ...product }); // Set data produk untuk diedit
-    setIsEditModalOpen(true); // Buka modal edit
+    setUpdatedProduct({ ...product }); 
+    setIsEditModalOpen(true); 
   };
 
   // Menghitung total harga otomatis berdasarkan harga satuan dan jumlah produk
@@ -72,7 +72,7 @@ const Dashboard = () => {
       });
       alert('Produk berhasil diupdate.');
       setIsEditModalOpen(false);
-      fetchData(token); // Refresh data setelah update
+      fetchData(token); 
     } catch (error) {
       alert('Terjadi kesalahan saat mengupdate produk.');
     }
