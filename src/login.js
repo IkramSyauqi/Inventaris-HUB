@@ -31,9 +31,10 @@ const Login = () => {
 
   return (
     <div className="container">
-      <div className="row justify-content-center align-items-center vh-100">
+      <div className="row justify-content-center items-center align-items-center vh-100">
         <div className="col-md-4 col-sm-8 col-10">
           <div className="card">
+          <h1>INVENTARIS HUB</h1>
             <div className="card-header">
               <h3>Login</h3>
             </div>
@@ -64,7 +65,7 @@ const Login = () => {
                   />
                 </div>
                 {error && <div className="alert alert-danger">{error}</div>}
-                <button type="submit" className="btn btn-primary w-100">Login</button>
+                <button type="submit" className="button button-outline w-100">Login</button>
               </form>
             </div>
           </div>

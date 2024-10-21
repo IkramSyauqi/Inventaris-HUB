@@ -1,16 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import debounce from 'lodash/debounce';
 import './dashboard.css';
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState(null); 
-  const [updatedProduct, setUpdatedProduct] = useState({}); 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState(null);
+  const [updatedProduct, setUpdatedProduct] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+
+  const fetchData = useCallback(async (token) => {
+    try {
+      const response = await axios.get('/products', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.data && response.data.products && Array.isArray(response.data.products)) {
+        setProducts(response.data.products);
+        setFilteredProducts(response.data.products);
+      } else {
+        throw new Error('Format data tidak sesuai');
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setError('Sesi Anda telah berakhir. Silakan login kembali.');
+        localStorage.removeItem('token');
+        navigate('/');
+      } else {
+        setError(error.message || 'Terjadi kesalahan saat memuat data');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -19,43 +48,29 @@ const Dashboard = () => {
     } else {
       fetchData(token);
     }
-  }, [navigate]);
+  }, [navigate, fetchData]);
 
-  const fetchData = async (token) => {
-    try {
-      const response = await axios.get('/products', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  const handleSearch = useCallback(
+    debounce((term) => {
+      const filtered = products.filter(product =>
+        product.productName.toLowerCase().includes(term.toLowerCase()) ||
+        product.category.toLowerCase().includes(term.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+    }, 300),
+    [products]
+  );
 
-      if (response.data && response.data.products && Array.isArray(response.data.products)) {
-        setProducts(response.data.products);
-      } else {
-        setError('Format data tidak sesuai, Periksa Kembali');
-      }
-
-      setIsLoading(false);
-    } catch (error) {
-      setError(error.response?.data?.message || 'Terjadi kesalahan saat memuat data');
-      if (error.response) {
-        if (error.response.status === 401) {
-          setError('Token tidak valid atau kadaluarsa. Silakan login kembali.');
-          localStorage.removeItem('token');
-          navigate('/');
-        }
-      }
-      setIsLoading(false);
-    }
-  };
+  useEffect(() => {
+    handleSearch(searchTerm);
+  }, [searchTerm, handleSearch]);
 
   const handleEdit = (product) => {
     setCurrentProduct(product);
-    setUpdatedProduct({ ...product }); 
-    setIsEditModalOpen(true); 
+    setUpdatedProduct({ ...product });
+    setIsEditModalOpen(true);
   };
 
-  // Menghitung total harga otomatis berdasarkan harga satuan dan jumlah produk
   const handleQuantityChange = (e) => {
     const quantity = parseInt(e.target.value) || 0;
     const totalPrice = updatedProduct.price * quantity;
@@ -64,143 +79,167 @@ const Dashboard = () => {
 
   const handleUpdateProduct = async () => {
     try {
+      setIsLoading(true);
       const token = localStorage.getItem('token');
       await axios.put(`/products/${currentProduct._id}`, updatedProduct, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      alert('Produk berhasil diupdate.');
       setIsEditModalOpen(false);
-      fetchData(token); 
+      fetchData(token);
     } catch (error) {
-      alert('Terjadi kesalahan saat mengupdate produk.');
+      setError('Terjadi kesalahan saat mengupdate produk.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`/products/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        alert('Produk berhasil dihapus.');
-        fetchData(token);
-      } catch (error) {
-        alert('Terjadi kesalahan saat menghapus produk.');
-      }
-    }
+  const handleDeleteConfirmation = (product) => {
+    setCurrentProduct(product);
+    setIsDeleteModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsEditModalOpen(false);
+  const handleDelete = async () => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem('token');
+      await axios.delete(`/products/${currentProduct._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setIsDeleteModalOpen(false);
+      fetchData(token);
+    } catch (error) {
+      setError('Terjadi kesalahan saat menghapus produk.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isLoading) {
-    return <div className="text-center mt-8">Memuat data...</div>;
+    return <div className="loading">Memuat data...</div>;
   }
 
   if (error) {
-    return <div className="text-center mt-8 text-red-600">{error}</div>;
+    return <div className="error">{error}</div>;
   }
 
   return (
-    <div className="container mx-auto p-4">
-      {products.length > 0 ? (
-        <table className="table-auto w-full text-left bg-white shadow-md rounded mt-6">
-          <thead className="bg-gray-800 text-white">
-            <tr>
-              <th className="px-4 py-2">ID</th>
-              <th className="px-4 py-2">Nama Produk</th>
-              <th className="px-4 py-2">Kategori</th>
-              <th className="px-4 py-2">Jumlah</th>
-              <th className="px-4 py-2">Harga Satuan</th>
-              <th className="px-4 py-2">Total Harga</th>
-              <th className="px-4 py-2">Tanggal</th>
-              <th className="px-4 py-2">Gambar</th>
-              <th className="px-4 py-2 text-center">Aksi</th>
+    <div className="dashboard-container p-5">
+      <h1>INVENTARIS HUB</h1>
+      <input
+        type="text"
+        placeholder="Cari Semua Product dan Kategori,,,"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="search-input"
+      />
+      <table>
+        <thead>
+          <tr>
+            <th>Nama Produk</th>
+            <th>Kategori</th>
+            <th>Jumlah</th>
+            <th>Harga Satuan</th>
+            <th>Total Harga</th>
+            <th>Tanggal</th>
+            <th>Gambar</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredProducts.map((product) => (
+            <tr key={product._id}>
+              <td>{product.productName}</td>
+              <td>{product.category}</td>
+              <td>{product.quantity}</td>
+              <td>Rp {product.price.toLocaleString()}</td>
+              <td>Rp {product.totalPrice.toLocaleString()}</td>
+              <td>{new Date(product.date).toLocaleDateString()}</td>
+              <td>
+                {product.image && (
+                  <img
+                    src={product.image}
+                    alt={product.productName}
+                    className="w-24 h-24 object-cover"
+                  />
+                )}
+              </td>
+              <td>
+                <div className="actions-buttons">
+                  <button className="button button-outline" onClick={() => handleEdit(product)}>Edit</button>
+                  <button className="button button-destructive" onClick={() => handleDeleteConfirmation(product)}>Delete</button>
+                </div>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product._id} className="border-t">
-                <td className="px-4 py-2">{product._id}</td>
-                <td className="px-4 py-2">{product.productName}</td>
-                <td className="px-4 py-2">{product.category}</td>
-                <td className="px-4 py-2">{product.quantity}</td>
-                <td className="px-4 py-2">Rp {product.price.toLocaleString()}</td>
-                <td className="px-4 py-2">Rp {product.totalPrice.toLocaleString()}</td>
-                <td className="px-4 py-2">{new Date(product.date).toLocaleDateString()}</td>
-                <td className="px-4 py-2">
-                  {product.image && (
-                    <img
-                      src={`https://inventaris-app-backend.vercel.app${product.image}`}
-                      alt={product.productName}
-                      className="w-24 h-24 object-cover"
-                    />
-                  )}
-                </td>
-                <td className="px-4 py-2">
-                  <div className="actions-buttons">
-                    <button onClick={() => handleEdit(product)} className="bg-blue-500 text-white px-4 py-2 rounded">Edit</button>
-                    <button onClick={() => handleDelete(product._id)} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className="text-center mt-4">Tidak ada data produk tersedia</p>
-      )}
+          ))}
+        </tbody>
+      </table>
 
-      {/* Modal Edit Produk */}
       {isEditModalOpen && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Edit Produk</h2>
-            <div className="form-group">
-              <label>Nama Produk</label>
-              <input
-                type="text"
-                value={updatedProduct.productName}
-                onChange={(e) => setUpdatedProduct({ ...updatedProduct, productName: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label>Kategori</label>
-              <input
-                type="text"
-                value={updatedProduct.category}
-                onChange={(e) => setUpdatedProduct({ ...updatedProduct, category: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label>Jumlah</label>
-              <input
-                type="number"
-                value={updatedProduct.quantity}
-                onChange={handleQuantityChange} // Panggil fungsi handleQuantityChange
-              />
-            </div>
-            <div className="form-group">
-              <label>Total Harga</label>
-              <input
-                type="text"
-                value={`Rp ${updatedProduct.totalPrice.toLocaleString()}`}
-                disabled
-              />
-            </div>
-            <div className="form-actions">
-              <button onClick={handleUpdateProduct} className="bg-blue-500 text-white px-4 py-2 rounded">Update</button>
-              <button onClick={closeModal} className="bg-gray-500 text-white px-4 py-2 rounded">Batal</button>
+        <>
+          <div className="overlay" onClick={() => setIsEditModalOpen(false)}></div>
+          <div className="modal">
+            <div className="modal-content">
+              <h2 className="text-center text-xl mb-4">Edit Produk</h2>
+              <div className="form-group">
+                <label>Nama Produk</label>
+                <input
+                  type="text"
+                  value={updatedProduct.productName || ''}
+                  onChange={(e) => setUpdatedProduct({ ...updatedProduct, productName: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Kategori</label>
+                <input
+                  type="text"
+                  value={updatedProduct.category || ''}
+                  onChange={(e) => setUpdatedProduct({ ...updatedProduct, category: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Jumlah</label>
+                <input
+                  type="number"
+                  value={updatedProduct.quantity || ''}
+                  onChange={handleQuantityChange}
+                />
+              </div>
+              <div className="form-group">
+                <label>Total Harga</label>
+                <input
+                  type="text"
+                  value={`Rp ${updatedProduct.totalPrice?.toLocaleString() || ''}`}
+                  disabled
+                />
+              </div>
+              <div className="form-actions">
+                <button className="button button-outline" onClick={handleUpdateProduct}>Update</button>
+                <button className="button button-destructive" onClick={() => setIsEditModalOpen(false)}>Batal</button>
+              </div>
             </div>
           </div>
-        </div>
+
+        </>
       )}
+
+      {isDeleteModalOpen && (
+
+        <>
+          <div className="overlay" onClick={() => setIsDeleteModalOpen(false)}></div>
+          <div className="modal">
+            <div className="modal-content">
+              <h2 className='modal-title'>Hapus Produk</h2>
+              <p className='modal-desc'>Apakah Anda yakin ingin menghapus produk "{currentProduct?.productName}"?</p>
+              <div className="form-actions">
+                <button className="button button-outline" onClick={handleDelete}>Hapus</button>
+                <button className="button button-destructive" onClick={() => setIsDeleteModalOpen(false)}>Batal</button>
+              </div>
+            </div>
+          </div>
+
+        </>
+      )}
+
     </div>
   );
 };

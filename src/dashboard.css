@@ -4,12 +4,16 @@ table {
   background-color: white;
   margin-top: 3em; /* Tambahkan margin-top normal */
   margin-right: -1em;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
 table th, table td {
   padding: 12px;
   border: 1px solid #ddd;
   text-align: left;
+  border-radius: 5px;
 }
 
 table th {
@@ -22,7 +26,7 @@ table tr:nth-child(even) {
 }
 
 table tr:hover {
-  background-color: #f1f1f1;
+  background-color: #c2c2c286;
 }
 
 table img {
@@ -49,20 +53,43 @@ button {
   font-size: 14px;
 }
 
-button.bg-blue-500 {
-  background-color: #4299e1;
+.button-destructive{
+  background-color: #e3342f;
+  color: white; 
+  padding: 10px 20px; 
+  border: none;
+  border-radius: 8px; 
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.button-destructive:hover {
+  background-color: #cc1f1a;
+}
+.button-destructive:focus {
+  outline: none; /* Hilangkan outline default */
+  box-shadow: 0 0 0 3px rgba(227, 52, 47, 0.5); /* Fokus menggunakan shadow */
 }
 
-button.bg-blue-500:hover {
-  background-color: #3182ce;
+.button-outline {
+  background-color: transparent;
+  color: #4a4a4a;
+  padding: 10px 20px;
+  border: 2px solid #414141;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.6s ease, color 0.3s ease;
 }
 
-button.bg-red-500 {
-  background-color: #f56565;
+.button-outline:hover {
+  background-color: #2d3748; 
+  color: #ffffff;
 }
 
-button.bg-red-500:hover {
-  background-color: #e53e3e;
+.button-outline:focus {
+  outline: none; 
+  box-shadow: 0 0 0 3px rgba(181, 181, 181, 0.5); 
 }
 
 .actions-buttons {
@@ -82,6 +109,18 @@ button.bg-red-500:hover {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); 
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  z-index: 999;
 }
 
 .modal-content {
@@ -90,6 +129,16 @@ button.bg-red-500:hover {
   border-radius: 8px;
   width: 400px;
   max-width: 90%;
+}
+.modal-title{
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bolder;
+}
+
+.modal-desc{
+  text-align: center;
+  margin-bottom: 40px;
 }
 
 .form-group {
@@ -122,4 +171,12 @@ button.bg-gray-500:hover {
   background-color: #e53e3e; 
 }
 
+
+.search-input{
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
 

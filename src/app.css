@@ -1,7 +1,14 @@
-body {
-  background-color: #f8f9fa; 
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+
+
+
+
+body {
+  background-color: #6969699a; 
+}
 .container {
   display: flex;
   justify-content:center;
@@ -13,8 +20,8 @@ body {
 .card {
   width: 400px; 
   border: none;
-  border-radius: 10px; /* Sudut melengkung */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Bayangan card */
+  border-radius: 10px; 
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); 
 }
 
 .card-header {
@@ -44,15 +51,20 @@ input:focus {
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); 
 }
 
-.btn {
-  background-color: #007bff;  
-  color: white; 
-  border: none;
-  border-radius: 5px; 
-  padding: 10px; 
-  font-size: 16px;
-  margin-top: 10px; 
- 
+.button-outline {
+  background-color: transparent;
+  color: #4a4a4a;
+  padding: 10px 20px;
+  border: 2px solid #414141;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.6s ease, color 0.3s ease;
+}
+
+.button-outline:hover {
+  background-color: #2d3748; 
+  color: #ffffff;
 }
 
 .btn:hover {
@@ -62,4 +74,11 @@ input:focus {
 .alert {
   margin-top: 10px;
   text-align: center; 
+}
+h1 {
+  text-align: center;
+  margin-bottom: 40px;
+  text-transform: uppercase;
+  font-size: xx-large;
+  font-weight: 600;
 }
