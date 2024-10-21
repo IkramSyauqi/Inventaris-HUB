@@ -7,6 +7,9 @@ const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState(null); // Produk yang sedang diedit
+  const [updatedProduct, setUpdatedProduct] = useState({}); // Data produk yang diedit
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,32 +29,74 @@ const Dashboard = () => {
         },
       });
 
-      console.log('Data dari API:', response.data);
-
-      if (response.data && response.data.products && Array.isArray(response.data.products) && response.data.products.length > 0) {
-        setProducts(response.data.products); // Mengatur state dengan array produk
-      }else {
-        console.log('Format data tidak sesuai');
+      if (response.data && response.data.products && Array.isArray(response.data.products)) {
+        setProducts(response.data.products);
+      } else {
         setError('Format data tidak sesuai, Periksa Kembali');
       }
 
       setIsLoading(false);
     } catch (error) {
-      console.error('Gagal memuat data produk:', error);
       setError(error.response?.data?.message || 'Terjadi kesalahan saat memuat data');
       if (error.response) {
         if (error.response.status === 401) {
           setError('Token tidak valid atau kadaluarsa. Silakan login kembali.');
           localStorage.removeItem('token');
           navigate('/');
-        } else {
-          setError(`Terjadi kesalahan: ${error.response.data.message || error.message}`);
         }
-      } else {
-        setError('Terjadi kesalahan saat memuat data. Periksa koneksi internet Anda.');
       }
       setIsLoading(false);
     }
+  };
+
+  const handleEdit = (product) => {
+    setCurrentProduct(product);
+    setUpdatedProduct({ ...product }); // Set data produk untuk diedit
+    setIsEditModalOpen(true); // Buka modal edit
+  };
+
+  // Menghitung total harga otomatis berdasarkan harga satuan dan jumlah produk
+  const handleQuantityChange = (e) => {
+    const quantity = parseInt(e.target.value) || 0;
+    const totalPrice = updatedProduct.price * quantity;
+    setUpdatedProduct({ ...updatedProduct, quantity, totalPrice });
+  };
+
+  const handleUpdateProduct = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(`/products/${currentProduct._id}`, updatedProduct, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      alert('Produk berhasil diupdate.');
+      setIsEditModalOpen(false);
+      fetchData(token); // Refresh data setelah update
+    } catch (error) {
+      alert('Terjadi kesalahan saat mengupdate produk.');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.delete(`/products/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        alert('Produk berhasil dihapus.');
+        fetchData(token);
+      } catch (error) {
+        alert('Terjadi kesalahan saat menghapus produk.');
+      }
+    }
+  };
+
+  const closeModal = () => {
+    setIsEditModalOpen(false);
   };
 
   if (isLoading) {
@@ -64,10 +109,6 @@ const Dashboard = () => {
 
   return (
     <div className="container mx-auto p-4">
-    {/* Tambahkan judul Inventaris Hub */}
-    <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">Inventaris Hub</h1>
-    
-    <h1 className="text-3xl font-bold mb-6 text-center text-white bg-gray-800 py-4 rounded">Dashboard Inventaris</h1>
       {products.length > 0 ? (
         <table className="table-auto w-full text-left bg-white shadow-md rounded mt-6">
           <thead className="bg-gray-800 text-white">
@@ -80,6 +121,7 @@ const Dashboard = () => {
               <th className="px-4 py-2">Total Harga</th>
               <th className="px-4 py-2">Tanggal</th>
               <th className="px-4 py-2">Gambar</th>
+              <th className="px-4 py-2 text-center">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -101,12 +143,63 @@ const Dashboard = () => {
                     />
                   )}
                 </td>
+                <td className="px-4 py-2">
+                  <div className="actions-buttons">
+                    <button onClick={() => handleEdit(product)} className="bg-blue-500 text-white px-4 py-2 rounded">Edit</button>
+                    <button onClick={() => handleDelete(product._id)} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       ) : (
         <p className="text-center mt-4">Tidak ada data produk tersedia</p>
+      )}
+
+      {/* Modal Edit Produk */}
+      {isEditModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Edit Produk</h2>
+            <div className="form-group">
+              <label>Nama Produk</label>
+              <input
+                type="text"
+                value={updatedProduct.productName}
+                onChange={(e) => setUpdatedProduct({ ...updatedProduct, productName: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label>Kategori</label>
+              <input
+                type="text"
+                value={updatedProduct.category}
+                onChange={(e) => setUpdatedProduct({ ...updatedProduct, category: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label>Jumlah</label>
+              <input
+                type="number"
+                value={updatedProduct.quantity}
+                onChange={handleQuantityChange} // Panggil fungsi handleQuantityChange
+              />
+            </div>
+            <div className="form-group">
+              <label>Total Harga</label>
+              <input
+                type="text"
+                value={`Rp ${updatedProduct.totalPrice.toLocaleString()}`}
+                disabled
+              />
+            </div>
+            <div className="form-actions">
+              <button onClick={handleUpdateProduct} className="bg-blue-500 text-white px-4 py-2 rounded">Update</button>
+              <button onClick={closeModal} className="bg-gray-500 text-white px-4 py-2 rounded">Batal</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
