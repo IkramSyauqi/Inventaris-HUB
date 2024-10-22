@@ -135,25 +135,25 @@ const Dashboard = () => {
       <table>
         <thead>
           <tr>
-            <th>Nama Produk</th>
-            <th>Kategori</th>
-            <th>Jumlah</th>
-            <th>Harga Satuan</th>
-            <th>Total Harga</th>
-            <th>Tanggal</th>
-            <th>Gambar</th>
-            <th>Aksi</th>
+            <th className='text-center'>Nama Produk</th>
+            <th className='text-center'>Kategori</th>
+            <th className='text-center'>Jumlah</th>
+            <th className='text-center'>Harga Satuan</th>
+            <th className='text-center'>Total Harga</th>
+            <th className='text-center'>Tanggal</th>
+            <th className='text-center'>Gambar</th>
+            <th className='text-center'>Aksi</th>
           </tr>
         </thead>
         <tbody>
           {filteredProducts.map((product) => (
             <tr key={product._id}>
-              <td>{product.productName}</td>
-              <td>{product.category}</td>
-              <td>{product.quantity}</td>
-              <td>Rp {product.price.toLocaleString()}</td>
-              <td>Rp {product.totalPrice.toLocaleString()}</td>
-              <td>{new Date(product.date).toLocaleDateString()}</td>
+              <td className='text-center'>{product.productName}</td>
+              <td className='text-center'>{product.category}</td>
+              <td className='text-center'>{product.quantity}</td>
+              <td className='text-center'>Rp {product.price.toLocaleString()}</td>
+              <td className='text-center'>Rp {product.totalPrice.toLocaleString()}</td>
+              <td className='text-center'>{new Date(product.date).toLocaleDateString()}</td>
               <td>
                 {product.image && (
                   <img
