@@ -1,13 +1,10 @@
-# Inventaris Hub
+# INVENTARIS HUB
 
-Cara menjalankan Program :
-
-1. Installation
- ``
-   npm install
- ``
-
-2. Running website
-``
+Install :
+```
+npm install
+```
+Running Program :
+```
 npm run start
-``
+```
