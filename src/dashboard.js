@@ -65,6 +65,11 @@ const Dashboard = () => {
     handleSearch(searchTerm);
   }, [searchTerm, handleSearch]);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
   const handleEdit = (product) => {
     setCurrentProduct(product);
     setUpdatedProduct({ ...product });
@@ -123,123 +128,129 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="dashboard-container p-5">
-      <h1>INVENTARIS HUB</h1>
-      <input
-        type="text"
-        placeholder="Cari Semua Product dan Kategori,,,"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="search-input"
-      />
-      <table>
-        <thead>
-          <tr>
-            <th>Nama Produk</th>
-            <th>Kategori</th>
-            <th>Jumlah</th>
-            <th>Harga Satuan</th>
-            <th>Total Harga</th>
-            <th>Tanggal</th>
-            <th>Gambar</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredProducts.map((product) => (
-            <tr key={product._id}>
-              <td>{product.productName}</td>
-              <td>{product.category}</td>
-              <td>{product.quantity}</td>
-              <td>Rp {product.price.toLocaleString()}</td>
-              <td>Rp {product.totalPrice.toLocaleString()}</td>
-              <td>{new Date(product.date).toLocaleDateString()}</td>
-              <td>
-                {product.image && (
-                  <img
-                    src={product.image}
-                    alt={product.productName}
-                    className="w-24 h-24 object-cover"
-                  />
-                )}
-              </td>
-              <td>
-                <div className="actions-buttons">
-                  <button className="button button-outline" onClick={() => handleEdit(product)}>Edit</button>
-                  <button className="button button-destructive" onClick={() => handleDeleteConfirmation(product)}>Delete</button>
-                </div>
-              </td>
+    <div>
+      <nav className="navbar">
+        <h1>INVENTARIS HUB</h1>
+        <div className="navbar-buttons">
+          <button className="profile-button" onClick={() => navigate('/profile')}> <i className="fas fa-user"></i>Profile</button>
+          <button className="logout-button" onClick={handleLogout}>Logout</button>
+        </div>
+      </nav>
+
+      <div className="dashboard-container p-5">
+        <input
+          type="text"
+          placeholder="Cari Semua Product dan Kategori..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+
+        <table>
+          <thead>
+            <tr>
+              <th className='text-center'>Nama Produk</th>
+              <th className='text-center'>Kategori</th>
+              <th className='text-center'>Jumlah</th>
+              <th className='text-center'>Harga Satuan</th>
+              <th className='text-center'>Total Harga</th>
+              <th className='text-center'>Tanggal</th>
+              <th className='text-center'>Gambar</th>
+              <th className='text-center'>Aksi</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredProducts.map((product) => (
+              <tr key={product._id}>
+                <td className='text-center'>{product.productName}</td>
+                <td className='text-center'>{product.category}</td>
+                <td className='text-center'>{product.quantity}</td>
+                <td className='text-center'>Rp {product.price.toLocaleString()}</td>
+                <td className='text-center'>Rp {product.totalPrice.toLocaleString()}</td>
+                <td className='text-center'>{new Date(product.date).toLocaleDateString()}</td>
+                <td>
+                  {product.image && (
+                    <img
+                      src={product.image}
+                      alt={product.productName}
+                      className="w-24 h-24 object-cover"
+                    />
+                  )}
+                </td>
+                <td>
+                  <div className="actions-buttons">
+                    <button className="button button-outline" onClick={() => handleEdit(product)}>Edit</button>
+                    <button className="button button-destructive" onClick={() => handleDeleteConfirmation(product)}>Delete</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      {isEditModalOpen && (
-        <>
-          <div className="overlay" onClick={() => setIsEditModalOpen(false)}></div>
-          <div className="modal">
-            <div className="modal-content">
-              <h2 className="text-center text-xl mb-4">Edit Produk</h2>
-              <div className="form-group">
-                <label>Nama Produk</label>
-                <input
-                  type="text"
-                  value={updatedProduct.productName || ''}
-                  onChange={(e) => setUpdatedProduct({ ...updatedProduct, productName: e.target.value })}
-                />
-              </div>
-              <div className="form-group">
-                <label>Kategori</label>
-                <input
-                  type="text"
-                  value={updatedProduct.category || ''}
-                  onChange={(e) => setUpdatedProduct({ ...updatedProduct, category: e.target.value })}
-                />
-              </div>
-              <div className="form-group">
-                <label>Jumlah</label>
-                <input
-                  type="number"
-                  value={updatedProduct.quantity || ''}
-                  onChange={handleQuantityChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Total Harga</label>
-                <input
-                  type="text"
-                  value={`Rp ${updatedProduct.totalPrice?.toLocaleString() || ''}`}
-                  disabled
-                />
-              </div>
-              <div className="form-actions">
-                <button className="button button-outline" onClick={handleUpdateProduct}>Update</button>
-                <button className="button button-destructive" onClick={() => setIsEditModalOpen(false)}>Batal</button>
+        {isEditModalOpen && (
+          <>
+            <div className="overlay" onClick={() => setIsEditModalOpen(false)}></div>
+            <div className="modal">
+              <div className="modal-content">
+                <h2 className="text-center text-xl mb-4">Edit Produk</h2>
+                <div className="form-group">
+                  <label>Nama Produk</label>
+                  <input
+                    type="text"
+                    value={updatedProduct.productName || ''}
+                    onChange={(e) => setUpdatedProduct({ ...updatedProduct, productName: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Kategori</label>
+                  <input
+                    type="text"
+                    value={updatedProduct.category || ''}
+                    onChange={(e) => setUpdatedProduct({ ...updatedProduct, category: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Jumlah</label>
+                  <input
+                    type="number"
+                    value={updatedProduct.quantity || ''}
+                    onChange={handleQuantityChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Total Harga</label>
+                  <input
+                    type="text"
+                    value={`Rp ${updatedProduct.totalPrice?.toLocaleString() || ''}`}
+                    disabled
+                  />
+                </div>
+                <div className="form-actions">
+                  <button className="button button-outline" onClick={handleUpdateProduct}>Update</button>
+                  <button className="button button-destructive" onClick={() => setIsEditModalOpen(false)}>Batal</button>
+                </div>
               </div>
             </div>
-          </div>
+          </>
+        )}
 
-        </>
-      )}
-
-      {isDeleteModalOpen && (
-
-        <>
-          <div className="overlay" onClick={() => setIsDeleteModalOpen(false)}></div>
-          <div className="modal">
-            <div className="modal-content">
-              <h2 className='modal-title'>Hapus Produk</h2>
-              <p className='modal-desc'>Apakah Anda yakin ingin menghapus produk "{currentProduct?.productName}"?</p>
-              <div className="form-actions">
-                <button className="button button-outline" onClick={handleDelete}>Hapus</button>
-                <button className="button button-destructive" onClick={() => setIsDeleteModalOpen(false)}>Batal</button>
+        {isDeleteModalOpen && (
+          <>
+            <div className="overlay" onClick={() => setIsDeleteModalOpen(false)}></div>
+            <div className="modal">
+              <div className="modal-content">
+                <h2 className='modal-title'>Hapus Produk</h2>
+                <p className='modal-desc'>Apakah Anda yakin ingin menghapus produk "{currentProduct?.productName}"?</p>
+                <div className="form-actions">
+                  <button className="button button-outline" onClick={handleDelete}>Hapus</button>
+                  <button className="button button-destructive" onClick={() => setIsDeleteModalOpen(false)}>Batal</button>
+                </div>
               </div>
             </div>
-          </div>
-
-        </>
-      )}
-
+          </>
+        )}
+      </div>
     </div>
   );
 };

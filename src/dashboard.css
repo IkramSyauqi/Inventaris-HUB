@@ -180,3 +180,83 @@ button.bg-gray-500:hover {
   margin-bottom: 10px;
 }
 
+/* Navbar styles */
+.navbar {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  background-color: #2d3748;
+  color: white;
+  padding: 40px 40px;
+  position: relative; 
+}
+
+.navbar h1 {
+  position: absolute; 
+  left: 50%; 
+  transform: translateX(-50%); 
+}
+
+/* Tambahkan style untuk container tombol */
+.navbar-buttons {
+  display: flex;
+  gap: 10px; /* Menambahkan jarak antar tombol */
+  position: absolute;
+  right: 50px; /* Posisikan ke kanan */
+}
+
+/* Sesuaikan style untuk profile dan logout button */
+.logout-button {
+  background-color: #ff6347;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #ff4500;
+}
+
+.profile-button {
+  background-color: white;    
+  color: black;              
+  border: 2px solid black;     
+  padding: 10px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;  
+  gap: 8px;             
+  transition: background-color 0.3s ease, color 0.3s ease; 
+}
+
+profile-button i {
+  font-size: 1.2rem;   
+}
+
+.profile-button:hover {
+  background-color: rgb(58, 54, 54);   
+  color: white;                
+}
+
+
+/* Adjustments to the main dashboard container */
+.dashboard-container {
+  margin-top: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Other existing styles */

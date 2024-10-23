@@ -35,9 +35,9 @@ const Login = () => {
         <div className="col-md-4 col-sm-8 col-10">
           <div className="card">
           <h1>INVENTARIS HUB</h1>
-            <div className="card-header">
+            {/* <div className="card-header">
               <h3>Login</h3>
-            </div>
+            </div> */}
             <div className="card-body">
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
