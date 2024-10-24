@@ -205,7 +205,6 @@ button.bg-gray-500:hover {
   right: 50px; /* Posisikan ke kanan */
 }
 
-/* Sesuaikan style untuk profile dan logout button */
 .logout-button {
   background-color: #ff6347;
   border: none;
@@ -214,6 +213,9 @@ button.bg-gray-500:hover {
   font-size: 1rem;
   cursor: pointer;
   border-radius: 5px;
+  display: flex;
+  align-items: center; 
+  gap: 4px;
   transition: background-color 0.3s ease;
 }
 
@@ -260,3 +262,11 @@ profile-button i {
 }
 
 /* Other existing styles */
+.fa-spinner {
+  margin-right: 5px;
+}
+
+.button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
