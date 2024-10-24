@@ -15,6 +15,8 @@ const Dashboard = () => {
   const [updatedProduct, setUpdatedProduct] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+  const [isUpdating, setIsUpdating] = useState(false);
+
 
   const fetchData = useCallback(async (token) => {
     try {
@@ -78,25 +80,33 @@ const Dashboard = () => {
 
   const handleQuantityChange = (e) => {
     const quantity = parseInt(e.target.value) || 0;
-    const totalPrice = updatedProduct.price * quantity;
+    const totalPrice = quantity * updatedProduct.price;  // Hitung total harga baru
     setUpdatedProduct({ ...updatedProduct, quantity, totalPrice });
   };
+  
+  const handlePriceChange = (e) => {
+    const price = parseInt(e.target.value) || 0;
+    const totalPrice = updatedProduct.quantity * price;  // Hitung total harga baru
+    setUpdatedProduct({ ...updatedProduct, price, totalPrice });
+  };
+  
 
   const handleUpdateProduct = async () => {
     try {
-      setIsLoading(true);
+      setIsUpdating(true); // Set loading state
       const token = localStorage.getItem('token');
       await axios.put(`/products/${currentProduct._id}`, updatedProduct, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setIsEditModalOpen(false);
-      fetchData(token);
+      fetchData(token); // Refresh data setelah update
     } catch (error) {
       setError('Terjadi kesalahan saat mengupdate produk.');
     } finally {
-      setIsLoading(false);
+      setIsUpdating(false); // Reset loading state
     }
   };
+  
 
   const handleDeleteConfirmation = (product) => {
     setCurrentProduct(product);
@@ -133,7 +143,7 @@ const Dashboard = () => {
         <h1>INVENTARIS HUB</h1>
         <div className="navbar-buttons">
           <button className="profile-button" onClick={() => navigate('/profile')}> <i className="fas fa-user"></i>Profile</button>
-          <button className="logout-button" onClick={handleLogout}>Logout</button>
+          <button className="logout-button" onClick={handleLogout}><i className="fas fa-sign-out-alt"></i>Logout</button>
         </div>
       </nav>
 
@@ -219,15 +229,23 @@ const Dashboard = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Total Harga</label>
+                  <label>Harga Satuan</label>
                   <input
-                    type="text"
-                    value={`Rp ${updatedProduct.totalPrice?.toLocaleString() || ''}`}
-                    disabled
+                    type="number"
+                    value={updatedProduct.price || ''}
+                    onChange={handlePriceChange}
                   />
                 </div>
                 <div className="form-actions">
-                  <button className="button button-outline" onClick={handleUpdateProduct}>Update</button>
+                <button className="button button-outline" onClick={handleUpdateProduct} disabled={isUpdating}>
+                  {isUpdating ? (
+                    <>
+                      <i className="fas fa-spinner fa-spin"></i> Updating...
+                    </>
+                  ) : (
+                    'Update'
+                  )}
+                </button>
                   <button className="button button-destructive" onClick={() => setIsEditModalOpen(false)}>Batal</button>
                 </div>
               </div>
