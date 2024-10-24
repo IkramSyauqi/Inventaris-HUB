@@ -2,8 +2,10 @@ import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import debounce from 'lodash/debounce';
+import { Layout, ArrowLeft, Edit, Trash2, BoxIcon, TagIcon, Package2Icon,DollarSign, CalendarFoldIcon, Settings2Icon, Image} from 'lucide-react';
 import './dashboard.css';
 
+// Dashboard component to manage product data with search, edit, and delete functionalities
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -14,8 +16,10 @@ const Dashboard = () => {
   const [currentProduct, setCurrentProduct] = useState(null);
   const [updatedProduct, setUpdatedProduct] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
+  const [imagePreview, setImagePreview] = useState(null);
   const navigate = useNavigate();
 
+  // Fetches product data from the server with token-based authentication
   const fetchData = useCallback(async (token) => {
     try {
       const response = await axios.get('/products', {
@@ -41,6 +45,7 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
+  // Effect to fetch data on initial render or when the token is refreshed
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -50,6 +55,7 @@ const Dashboard = () => {
     }
   }, [navigate, fetchData]);
 
+  // Debounced search handler to filter products based on search term
   const handleSearch = useCallback(
     debounce((term) => {
       const filtered = products.filter(product =>
@@ -61,27 +67,34 @@ const Dashboard = () => {
     [products]
   );
 
+  // Effect to run search whenever searchTerm changes
   useEffect(() => {
     handleSearch(searchTerm);
   }, [searchTerm, handleSearch]);
 
+  // Handle user logout
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/');
   };
 
+
+  // Handle edit action for a specific product
   const handleEdit = (product) => {
     setCurrentProduct(product);
     setUpdatedProduct({ ...product });
     setIsEditModalOpen(true);
   };
 
+  // Handle quantity change and calculate total price during product update
   const handleQuantityChange = (e) => {
     const quantity = parseInt(e.target.value) || 0;
     const totalPrice = updatedProduct.price * quantity;
     setUpdatedProduct({ ...updatedProduct, quantity, totalPrice });
   };
 
+
+  // Handle product update after editing
   const handleUpdateProduct = async () => {
     try {
       setIsLoading(true);
@@ -98,11 +111,13 @@ const Dashboard = () => {
     }
   };
 
+  // Handle product deletion confirmation
   const handleDeleteConfirmation = (product) => {
     setCurrentProduct(product);
     setIsDeleteModalOpen(true);
   };
 
+  // Handle actual product deletion
   const handleDelete = async () => {
     try {
       setIsLoading(true);
@@ -119,25 +134,42 @@ const Dashboard = () => {
     }
   };
 
+
+  // Render loading state
   if (isLoading) {
     return <div className="loading">Memuat data...</div>;
   }
 
+  // Render error state
   if (error) {
     return <div className="error">{error}</div>;
   }
 
   return (
     <div>
-      <nav className="navbar">
-        <h1>INVENTARIS HUB</h1>
-        <div className="navbar-buttons">
-          <button className="profile-button" onClick={() => navigate('/profile')}> <i className="fas fa-user"></i>Profile</button>
-          <button className="logout-button" onClick={handleLogout}>Logout</button>
+      {/* Navbar with title and user actions */}
+      <nav className="bg-slate-700 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <Layout className="h-8 w-8 text-blue-600" />
+              <span className="ml-2 text-xl font-bold text-white">Management Product</span>
+            </div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate('/home')}
+                className="flex items-center text-white hover:text-gray-400"
+              >
+                <ArrowLeft className="h-5 w-5 mr-1" />
+                Back to Home
+              </button>
+            </div>
+          </div>
         </div>
       </nav>
 
       <div className="dashboard-container p-5">
+        {/* Search input and table header */}
         <input
           type="text"
           placeholder="Cari Semua Product dan Kategori..."
@@ -146,20 +178,71 @@ const Dashboard = () => {
           className="search-input"
         />
 
+        {/* Table with product data */}
         <table>
           <thead>
             <tr>
-              <th className='text-center'>Nama Produk</th>
-              <th className='text-center'>Kategori</th>
-              <th className='text-center'>Jumlah</th>
-              <th className='text-center'>Harga Satuan</th>
-              <th className='text-center'>Total Harga</th>
-              <th className='text-center'>Tanggal</th>
-              <th className='text-center'>Gambar</th>
-              <th className='text-center'>Aksi</th>
+              <th
+                className='text-center'>
+                <span className='flex gap-2'>
+                  <BoxIcon className='h-5 w-5' />
+                  Nama Produk
+                </span>
+              </th>
+
+              <th
+                className='text-center'>
+                <span className='flex gap-2'>
+                  <TagIcon className='h-5 w-5' />
+                  Kategori
+                </span>
+              </th>
+              <th
+                className='text-center'>
+                <span className='flex gap-2'>
+                  <Package2Icon className='h-5 w-5' />
+                  Jumlah
+                </span>
+              </th>
+              <th
+                className='text-center'>
+                <span className='flex gap-2'>
+                  <DollarSign className='h-5 w-5' />
+                  Harga Satuan
+                </span>
+              </th>
+              <th
+                className='text-center'>
+                <span className='flex gap-2'>
+                  <DollarSign className='h-5 w-5' />
+                  Total Harga
+                </span>
+              </th>
+              <th
+                className='text-center'>
+                <span className='flex gap-2'>
+                  <CalendarFoldIcon className='h-5 w-5' />
+                  Tanggal
+                </span>
+              </th>
+              <th
+                className='text-center'>
+                <span className='flex gap-2'>
+                  <Image className='h-5 w-5' />
+                  Gambar
+                </span>
+              </th>
+              <th
+                className='text-center'>
+                <span className='flex gap-2'>
+                  <Settings2Icon className='h-5 w-5' />
+                  Aksi
+                </span>
+              </th>
             </tr>
           </thead>
           <tbody>
+            {/* Render table rows for each product */}
             {filteredProducts.map((product) => (
               <tr key={product._id}>
                 <td className='text-center'>{product.productName}</td>
@@ -173,14 +256,22 @@ const Dashboard = () => {
                     <img
                       src={product.image}
                       alt={product.productName}
-                      className="w-24 h-24 object-cover"
+                      className="w-24 h-24 object-cover "
                     />
                   )}
                 </td>
                 <td>
                   <div className="actions-buttons">
-                    <button className="button button-outline" onClick={() => handleEdit(product)}>Edit</button>
-                    <button className="button button-destructive" onClick={() => handleDeleteConfirmation(product)}>Delete</button>
+                    <button
+                      className="text-slate-700 hover:text-blue-900"
+                      onClick={() => handleEdit(product)}>
+                      <Edit className="h-5 w-5" />
+                    </button>
+                    <button
+                      className="text-red-600 hover:text-red-900"
+                      onClick={() => handleDeleteConfirmation(product)}>
+                      <Trash2 className="h-5 w-5" />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -188,6 +279,7 @@ const Dashboard = () => {
           </tbody>
         </table>
 
+        {/* Modal for editing product data */}
         {isEditModalOpen && (
           <>
             <div className="overlay" onClick={() => setIsEditModalOpen(false)}></div>
@@ -235,6 +327,7 @@ const Dashboard = () => {
           </>
         )}
 
+        {/* Modal for deleting product data */}
         {isDeleteModalOpen && (
           <>
             <div className="overlay" onClick={() => setIsDeleteModalOpen(false)}></div>
