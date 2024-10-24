@@ -16,7 +16,7 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   const [isUpdating, setIsUpdating] = useState(false);
-
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const fetchData = useCallback(async (token) => {
     try {
@@ -95,9 +95,29 @@ const Dashboard = () => {
     try {
       setIsUpdating(true); // Set loading state
       const token = localStorage.getItem('token');
+
+      const updatedData = { 
+        ...updatedProduct, 
+        date: new Date().toISOString() // Set tanggal terbaru saat update
+    };
+
       await axios.put(`/products/${currentProduct._id}`, updatedProduct, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+       // Update produk di state frontend
+       setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+            product._id === currentProduct._id ? { ...product, ...updatedData } : product
+        )
+    );
+    
+    setFilteredProducts((prevFilteredProducts) =>
+        prevFilteredProducts.map((product) =>
+            product._id === currentProduct._id ? { ...product, ...updatedData } : product
+        )
+    );
+
       setIsEditModalOpen(false);
       fetchData(token); // Refresh data setelah update
     } catch (error) {
