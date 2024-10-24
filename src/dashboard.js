@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import debounce from 'lodash/debounce';
-import { Layout, ArrowLeft, Edit, Trash2, BoxIcon, TagIcon, Package2Icon,DollarSign, CalendarFoldIcon, Settings2Icon, Image} from 'lucide-react';
+import { Layout, ArrowLeft, Edit, Trash2, BoxIcon, TagIcon, Package2Icon, DollarSign, CalendarFoldIcon, Settings2Icon, Image } from 'lucide-react';
 import './dashboard.css';
 
 // Dashboard component to manage product data with search, edit, and delete functionalities
@@ -16,8 +16,9 @@ const Dashboard = () => {
   const [currentProduct, setCurrentProduct] = useState(null);
   const [updatedProduct, setUpdatedProduct] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
-  const [imagePreview, setImagePreview] = useState(null);
   const navigate = useNavigate();
+  const [isUpdating, setIsUpdating] = useState(false);
+
 
   // Fetches product data from the server with token-based authentication
   const fetchData = useCallback(async (token) => {
@@ -89,27 +90,55 @@ const Dashboard = () => {
   // Handle quantity change and calculate total price during product update
   const handleQuantityChange = (e) => {
     const quantity = parseInt(e.target.value) || 0;
-    const totalPrice = updatedProduct.price * quantity;
+    const totalPrice = quantity * updatedProduct.price;  // Hitung total harga baru
     setUpdatedProduct({ ...updatedProduct, quantity, totalPrice });
   };
+
+  const handlePriceChange = (e) => {
+    const price = parseInt(e.target.value) || 0;
+    const totalPrice = updatedProduct.quantity * price;  // Hitung total harga baru
+    setUpdatedProduct({ ...updatedProduct, price, totalPrice });
+  };
+
 
 
   // Handle product update after editing
   const handleUpdateProduct = async () => {
     try {
-      setIsLoading(true);
+      setIsUpdating(true); // Set loading state
       const token = localStorage.getItem('token');
+
+      const updatedData = {
+        ...updatedProduct,
+        date: new Date().toISOString() // Set tanggal terbaru saat update
+      };
+
       await axios.put(`/products/${currentProduct._id}`, updatedProduct, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      // Update produk di state frontend
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product._id === currentProduct._id ? { ...product, ...updatedData } : product
+        )
+      );
+
+      setFilteredProducts((prevFilteredProducts) =>
+        prevFilteredProducts.map((product) =>
+          product._id === currentProduct._id ? { ...product, ...updatedData } : product
+        )
+      );
+
       setIsEditModalOpen(false);
-      fetchData(token);
+      fetchData(token); // Refresh data setelah update
     } catch (error) {
       setError('Terjadi kesalahan saat mengupdate produk.');
     } finally {
-      setIsLoading(false);
+      setIsUpdating(false); // Reset loading state
     }
   };
+
 
   // Handle product deletion confirmation
   const handleDeleteConfirmation = (product) => {
@@ -167,7 +196,6 @@ const Dashboard = () => {
           </div>
         </div>
       </nav>
-
       <div className="dashboard-container p-5">
         {/* Search input and table header */}
         <input
@@ -311,15 +339,23 @@ const Dashboard = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Total Harga</label>
+                  <label>Harga Satuan</label>
                   <input
-                    type="text"
-                    value={`Rp ${updatedProduct.totalPrice?.toLocaleString() || ''}`}
-                    disabled
+                    type="number"
+                    value={updatedProduct.price || ''}
+                    onChange={handlePriceChange}
                   />
                 </div>
                 <div className="form-actions">
-                  <button className="button button-outline" onClick={handleUpdateProduct}>Update</button>
+                  <button className="button button-outline" onClick={handleUpdateProduct} disabled={isUpdating}>
+                    {isUpdating ? (
+                      <>
+                        <i className="fas fa-spinner fa-spin"></i> Updating...
+                      </>
+                    ) : (
+                      'Update'
+                    )}
+                  </button>
                   <button className="button button-destructive" onClick={() => setIsEditModalOpen(false)}>Batal</button>
                 </div>
               </div>
