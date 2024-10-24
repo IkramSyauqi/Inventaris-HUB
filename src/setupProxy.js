@@ -8,6 +8,7 @@ module.exports = function (app) {
       changeOrigin: true,
       secure: false,
       logLevel: 'debug',
+
       // onProxyReq: (proxyReq, req, res) => {
       //   // Log detail request
       //   console.log('Request URL:', req.url);
