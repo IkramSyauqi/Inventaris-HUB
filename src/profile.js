@@ -24,7 +24,7 @@ const DashboardUser = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            // Pastikan data yang diterima adalah array
+            // Pastikan data yang diterima adalah sebuah array
             if (Array.isArray(response.data)) {
                 setUsers(response.data);
             } else if (response.data.data && Array.isArray(response.data.data)) {
