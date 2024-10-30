@@ -18,6 +18,8 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
 
 
   // Fetches product data from the server with token-based authentication
@@ -90,13 +92,13 @@ const Dashboard = () => {
   // Handle quantity change and calculate total price during product update
   const handleQuantityChange = (e) => {
     const quantity = parseInt(e.target.value) || 0;
-    const totalPrice = quantity * updatedProduct.price; 
+    const totalPrice = quantity * updatedProduct.price;  // Hitung total harga baru
     setUpdatedProduct({ ...updatedProduct, quantity, totalPrice });
   };
 
   const handlePriceChange = (e) => {
     const price = parseInt(e.target.value) || 0;
-    const totalPrice = updatedProduct.quantity * price;  
+    const totalPrice = updatedProduct.quantity * price;  // Hitung total harga baru
     setUpdatedProduct({ ...updatedProduct, price, totalPrice });
   };
 
@@ -149,7 +151,7 @@ const Dashboard = () => {
   // Handle actual product deletion
   const handleDelete = async () => {
     try {
-      setIsLoading(true);
+      setIsDeleting(true); // Set deleting state
       const token = localStorage.getItem('token');
       await axios.delete(`/products/${currentProduct._id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -159,15 +161,14 @@ const Dashboard = () => {
     } catch (error) {
       setError('Terjadi kesalahan saat menghapus produk.');
     } finally {
-      setIsLoading(false);
+      setIsDeleting(false); // Reset deleting state
     }
   };
 
-
   // Render loading state
-  if (isLoading) {
-    return <div className="loading">Memuat data...</div>;
-  }
+  // if (isLoading) {
+  //   return <div className="loading">Memuat data...</div>;
+  // }
 
   // Render error state
   if (error) {
@@ -372,9 +373,14 @@ const Dashboard = () => {
                 <h2 className='modal-title'>Hapus Produk</h2>
                 <p className='modal-desc'>Apakah Anda yakin ingin menghapus produk "{currentProduct?.productName}"?</p>
                 <div className="form-actions">
-                  <button className="button button-outline" onClick={handleDelete}>Hapus</button>
-                  <button className="button button-destructive" onClick={() => setIsDeleteModalOpen(false)}>Batal</button>
+                   <button className="button button-outline" onClick={handleDelete} disabled={isDeleting}>
+                       {isDeleting ? (<><i className="fas fa-spinner fa-spin"></i> Menghapus...</>
+                        ) : ( 'Hapus')}</button>
+                    <button className="button button-destructive" onClick={() => setIsDeleteModalOpen(false)} disabled={isDeleting}>
+                      Batal
+                    </button>
                 </div>
+
               </div>
             </div>
           </>
