@@ -24,7 +24,7 @@ const DashboardUser = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            // Pastikan data yang diterima adalah sebuah array
+            // Pastikan data yang diterima adalah array
             if (Array.isArray(response.data)) {
                 setUsers(response.data);
             } else if (response.data.data && Array.isArray(response.data.data)) {
@@ -85,7 +85,7 @@ const DashboardUser = () => {
         }
     };
 
-    if (isLoading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    // if (isLoading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
     if (error) return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
 
     // Tambahkan pengecekan array sebelum mapping
