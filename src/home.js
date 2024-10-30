@@ -32,13 +32,13 @@ const Home = () => {
             </nav>
 
             {/* Main Content */}
-            <div className="max-w-6xl mx-auto px-4 py-8 pt-40">
+            <div className="max-w-6xl mx-auto px-4 py-8 pt-20">
                 <h1 className="text-3xl font-bold text-center mb-8">Welcome to Admin Dashboard</h1>
 
                 <div className="grid md:grid-cols-2 gap-6">
                     {/* User Dashboard Card */}
                     <div
-                        onClick={() => navigate('/dashboard-user')}
+                        onClick={() => navigate('/profile')}
                         className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl transition-shadow cursor-pointer"
                     >
                         <div className="flex items-center justify-center mb-4">
