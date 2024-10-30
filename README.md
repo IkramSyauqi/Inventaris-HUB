@@ -8,6 +8,15 @@ Running Program :
 ```
 npm run start
 ```
+--
+Fitur yang Tersedia
+- Login
+- Edit user
+- Delete user
+- Search product
+- Edit Product
+- Delete Product
+- Logout
 
 Tampilan Program
 ---
