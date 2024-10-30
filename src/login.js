@@ -2,71 +2,30 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './app.css';
-import Home from './home';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
 
     try {
-      console.log('Attempting login with:', { username });
-      const response = await axios.post('/users/login', {
+      // Akses API melalui proxy
+      const response = await axios.post('/users/login', {  
         username,
-        password
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
-        withCredentials: true,
+        password,
       });
 
-      console.log('Login response:', response.status, response.data);
-
-      if (response.data && response.data.token) {
+      if (response.status === 200) {
+        // Simpan token ke localStorage dan arahkan ke dashboard
         localStorage.setItem('token', response.data.token);
-        // Tambahan: Simpan role user jika ada dalam response
-        if (response.data.role) {
-          localStorage.setItem('userRole', response.data.role);
-        }
         navigate('/home');
-      } else {
-        setError('Response tidak valid dari server');
       }
-    } catch (err) {
-      // Error handling yang lebih detail
-      if (err.response) {
-        // Server meresponse dengan status error
-        switch (err.response.status) {
-          case 401:
-            setError('Username atau password salah');
-            break;
-          case 404:
-            setError('Server tidak ditemukan');
-            break;
-          case 500:
-            setError('Terjadi kesalahan pada server');
-            break;
-          default:
-            setError('Login gagal: ' + (err.response.data?.message || 'Unknown error'));
-        }
-      } else if (err.request) {
-        // Request dibuat tapi tidak ada response
-        setError('Tidak dapat terhubung ke server');
-      } else {
-        // Error lainnya
-        setError('Terjadi kesalahan: ' + err.message);
-      }
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      setError('Login gagal, periksa username dan password Anda.');
     }
   };
 
@@ -76,9 +35,9 @@ const Login = () => {
         <div className="col-md-4 col-sm-8 col-10">
           <div className="card">
           <h1>INVENTARIS HUB</h1>
-            <div className="card-header">
+            {/* <div className="card-header">
               <h3>Login</h3>
-            </div>
+            </div> */}
             <div className="card-body">
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
