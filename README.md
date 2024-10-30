@@ -1,6 +1,6 @@
 # INVENTARIS HUB
 
-Install :
+Installation Program :
 ```
 npm install
 ```
