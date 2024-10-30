@@ -90,13 +90,13 @@ const Dashboard = () => {
   // Handle quantity change and calculate total price during product update
   const handleQuantityChange = (e) => {
     const quantity = parseInt(e.target.value) || 0;
-    const totalPrice = quantity * updatedProduct.price;  // Hitung total harga baru
+    const totalPrice = quantity * updatedProduct.price; 
     setUpdatedProduct({ ...updatedProduct, quantity, totalPrice });
   };
 
   const handlePriceChange = (e) => {
     const price = parseInt(e.target.value) || 0;
-    const totalPrice = updatedProduct.quantity * price;  // Hitung total harga baru
+    const totalPrice = updatedProduct.quantity * price;  
     setUpdatedProduct({ ...updatedProduct, price, totalPrice });
   };
 
