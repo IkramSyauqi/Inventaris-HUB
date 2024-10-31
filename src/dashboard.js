@@ -394,24 +394,25 @@ const Dashboard = () => {
               <div className="modal-content">
                 <h2 className="text-center text-xl mb-4">Edit Produk</h2>
 
-                {/* Image Preview Section */}
+            {/* Image Preview Section */}
                 <div className="form-group">
                   <label>Gambar Produk</label>
-                  <div className="relative w-full h-64 mb-4 group">
+                  <div className="relative w-full h-64 mb-4">
                     <img
                       src={previewImage || currentProduct.image || '/placeholder-image.jpg'}
                       alt="Product preview"
                       className="w-full h-full object-contain border rounded-lg"
                     />
 
-                    {/* Hover Overlay with Change Picture Button */}
-                    <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center rounded-lg">
+                    {/* Overlay with Semi-Transparent Change Picture Button */}
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
                       <button
                         onClick={handleChangeImageClick}
-                        className="bg-white text-gray-800 px-4 py-2 rounded-lg flex items-center gap-2 z-1000 hover:bg-red-500"
+                        className="bg-white bg-opacity-40 text-gray-800 px-4 py-2 rounded-lg flex items-center gap-2 z-1000 hover:bg-opacity-90 hover:bg-red-500 transition-opacity duration-300"
+                        style={{ transition: 'all 0.3s ease' }} // Optional for smoother transition
                       >
                         <Camera className="h-5 w-5" />
-                        Change Picture
+                        Ubah
                       </button>
                     </div>
 
