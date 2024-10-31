@@ -24,12 +24,11 @@ Tampilan Program
    -
    ![image](https://github.com/user-attachments/assets/67bb32ba-094d-4c72-bd44-86081f1664d2)
 
-   - Username : Admin
-   - Passowrd : 123
 ---
 2. Page Home
    -
- ![image](https://github.com/user-attachments/assets/f17311ae-1af2-44ba-ad3e-9d6cb6914d53)
+![image](https://github.com/user-attachments/assets/90cd73de-cc12-46c6-a851-a35b432ec06d)
+
 
    - User Management : Mengarah ke dashbord user management
    - Product Management : Mengarah ke dashboard produk
