@@ -39,7 +39,12 @@ Tampilan Program
    ![image](https://github.com/user-attachments/assets/23c7861d-8e05-42ee-bbd4-9f63c68f8fb1)
    Page User Management Edit
    -
-   ![image](https://github.com/user-attachments/assets/a1ec26e6-f5bf-44af-86b3-175a591f07f0)
+   ![image](https://github.com/user-attachments/assets/a80ed5e2-0c13-4587-9dba-aebc7a077492)
+   Page User Management Delete
+   -
+   ![image](https://github.com/user-attachments/assets/9f16c8ad-4233-4ddc-ab91-295a32edab1f)
+
+
 ---
 4. Page Product Management
    -
