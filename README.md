@@ -22,7 +22,8 @@ Tampilan Program
 ---
 1. Page Login
    -
-   ![image](https://github.com/user-attachments/assets/67bb32ba-094d-4c72-bd44-86081f1664d2)
+![image](https://github.com/user-attachments/assets/9fb6b166-3426-406e-8d42-9a6ddcd1e8ba)
+
 
 ---
 2. Page Home
