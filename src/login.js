@@ -9,11 +9,10 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-
     try {
       // Akses API melalui proxy
       const response = await axios.post('/users/login', {  
@@ -28,6 +27,8 @@ const Login = () => {
       }
     } catch (error) {
       setError('Login gagal, periksa username dan password Anda.');
+    } finally {
+      setIsLoading(false); 
     }
   };
 

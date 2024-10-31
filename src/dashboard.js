@@ -29,6 +29,7 @@ const Dashboard = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const [isDeleting, setIsDeleting] = useState(false);
 
 
   // Fetches product data from the server with token-based authentication
@@ -217,7 +218,7 @@ const Dashboard = () => {
   // Handle actual product deletion
   const handleDelete = async () => {
     try {
-      setIsLoading(true);
+      setIsDeleting(true); // Set deleting state
       const token = localStorage.getItem('token');
       await axios.delete(`/products/${currentProduct._id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -227,7 +228,7 @@ const Dashboard = () => {
     } catch (error) {
       setError('Terjadi kesalahan saat menghapus produk.');
     } finally {
-      setIsLoading(false);
+      setIsDeleting(false); // Reset deleting state
     }
   };
 
@@ -489,12 +490,17 @@ const Dashboard = () => {
                 <h2 className='modal-title'>Hapus Produk</h2>
                 <p className='modal-desc'>Apakah Anda yakin ingin menghapus produk "{currentProduct?.productName}"?</p>
                 <div className="form-actions">
-                  <button className="button button-outline" onClick={handleDelete}>Hapus</button>
-                  <button className="button button-destructive" onClick={() => setIsDeleteModalOpen(false)}>Batal</button>
+                  <button className="button button-outline" onClick={handleDelete} disabled={isDeleting}>
+                    {isDeleting ? (<><i className="fas fa-spinner fa-spin"></i> Menghapus...</>
+                    ) : ('Hapus')}</button>
+                  <button className="button button-destructive" onClick={() => setIsDeleteModalOpen(false)} disabled={isDeleting}>
+                    Batal
+                  </button>
                 </div>
+
               </div>
             </div>
-          </>
+          </> 
         )}
       </div>
     </div>

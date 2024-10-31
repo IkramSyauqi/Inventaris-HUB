@@ -1,6 +1,6 @@
 # INVENTARIS HUB
 
-Install :
+Installation Program :
 ```
 npm install
 ```
@@ -8,8 +8,17 @@ Running Program :
 ```
 npm run start
 ```
+--------------
+Fitur yang Tersedia
+- Login
+- Edit user
+- Delete user
+- Search product
+- Edit Product
+- Delete Product
+- Logout
 
-#Tampilan Program
+Tampilan Program
 ---
 1. Page Login
    -
@@ -20,7 +29,7 @@ npm run start
 ---
 2. Page Home
    -
-   ![image](https://github.com/user-attachments/assets/ef3ed8c2-f71f-463c-a750-9e4100776b15)
+ ![image](https://github.com/user-attachments/assets/f17311ae-1af2-44ba-ad3e-9d6cb6914d53)
 
    - User Management : Mengarah ke dashbord user management
    - Product Management : Mengarah ke dashboard produk
@@ -30,7 +39,12 @@ npm run start
    ![image](https://github.com/user-attachments/assets/23c7861d-8e05-42ee-bbd4-9f63c68f8fb1)
    Page User Management Edit
    -
-   ![image](https://github.com/user-attachments/assets/a1ec26e6-f5bf-44af-86b3-175a591f07f0)
+   ![image](https://github.com/user-attachments/assets/a80ed5e2-0c13-4587-9dba-aebc7a077492)
+   Page User Management Delete
+   -
+   ![image](https://github.com/user-attachments/assets/9f16c8ad-4233-4ddc-ab91-295a32edab1f)
+
+
 ---
 4. Page Product Management
    -
