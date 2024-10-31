@@ -27,7 +27,8 @@ Tampilan Program
 ---
 2. Page Home
    -
- ![image](https://github.com/user-attachments/assets/f17311ae-1af2-44ba-ad3e-9d6cb6914d53)
+![image](https://github.com/user-attachments/assets/90cd73de-cc12-46c6-a851-a35b432ec06d)
+
 
    - User Management : Mengarah ke dashbord user management
    - Product Management : Mengarah ke dashboard produk
