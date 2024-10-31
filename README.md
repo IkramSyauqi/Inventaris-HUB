@@ -24,8 +24,6 @@ Tampilan Program
    -
    ![image](https://github.com/user-attachments/assets/67bb32ba-094d-4c72-bd44-86081f1664d2)
 
-   - Username : Admin
-   - Passowrd : 123
 ---
 2. Page Home
    -
