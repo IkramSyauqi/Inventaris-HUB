@@ -10,6 +10,7 @@ npm run start
 ```
 --------------
 Fitur yang Tersedia
+- Dark Mode/Light Mode
 - Login
 - Edit user
 - Delete user
