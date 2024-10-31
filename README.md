@@ -51,7 +51,8 @@ Tampilan Program
    ![image](https://github.com/user-attachments/assets/616b4713-02c5-48b7-92ab-7a47f802b1bb)
    Page Edit Product
    -
-   ![image](https://github.com/user-attachments/assets/0e4a280d-1941-414a-8b62-3226d749a2e9)
+  ![image](https://github.com/user-attachments/assets/86199700-8526-49e8-9a74-4989f54d77cb)
+
    Page Delete Product
    -
    ![image](https://github.com/user-attachments/assets/306d57b5-2158-440f-b659-ae89524f3b08)
