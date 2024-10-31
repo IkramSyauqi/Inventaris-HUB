@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './app.css';
 
+
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -11,6 +12,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
 
     try {
       // Akses API melalui proxy
@@ -30,15 +32,13 @@ const Login = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container dark:bg-gray-900">
       <div className="row justify-content-center items-center align-items-center vh-100">
         <div className="col-md-4 col-sm-8 col-10">
-          <div className="card">
-          <h1>INVENTARIS HUB</h1>
-            {/* <div className="card-header">
-              <h3>Login</h3>
-            </div> */}
-            <div className="card-body">
+          <div className="card dark:bg-zinc-200">
+          <h1 className='text-center text-gray-950'>INVENTARIS HUB</h1>
+
+            <div className="card-body dark:bg-gray-900 border-2 border-white rounded-lg">
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label htmlFor="username" className="form-label">Username</label>
@@ -65,7 +65,7 @@ const Login = () => {
                   />
                 </div>
                 {error && <div className="alert alert-danger">{error}</div>}
-                <button type="submit" className="button button-outline w-100">Login</button>
+                <button type="submit" className="button-outline dark:bg-gray-300 focus:text-white  w-100">Login</button>
               </form>
             </div>
           </div>

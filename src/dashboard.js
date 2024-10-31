@@ -1,9 +1,17 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import './dashboard.css';
 import axios from 'axios';
+
+import LoadingScreen from './components/loadingScreen';
 import { useNavigate } from 'react-router-dom';
 import debounce from 'lodash/debounce';
-import { Layout, ArrowLeft, Edit, Trash2, BoxIcon, TagIcon, Package2Icon, DollarSign, CalendarFoldIcon, Settings2Icon, Image } from 'lucide-react';
-import './dashboard.css';
+import {
+  Layout, ArrowLeft, Edit,
+  Trash2, BoxIcon, TagIcon,
+  Package2Icon, DollarSign,
+  CalendarFoldIcon, Settings2Icon,
+  Image, Camera
+} from 'lucide-react';
 
 // Dashboard component to manage product data with search, edit, and delete functionalities
 const Dashboard = () => {
@@ -16,8 +24,11 @@ const Dashboard = () => {
   const [currentProduct, setCurrentProduct] = useState(null);
   const [updatedProduct, setUpdatedProduct] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
-  const navigate = useNavigate();
   const [isUpdating, setIsUpdating] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
 
   // Fetches product data from the server with token-based authentication
@@ -56,13 +67,21 @@ const Dashboard = () => {
     }
   }, [navigate, fetchData]);
 
+  const safeString = (value) => {
+    return value ? value.toString().toLowerCase() : '';
+  };
+
   // Debounced search handler to filter products based on search term
   const handleSearch = useCallback(
     debounce((term) => {
-      const filtered = products.filter(product =>
-        product.productName.toLowerCase().includes(term.toLowerCase()) ||
-        product.category.toLowerCase().includes(term.toLowerCase())
-      );
+      const searchTerm = safeString(term);
+      const filtered = products.filter(product => {
+        const productName = safeString(product?.productName);
+        const category = safeString(product?.category);
+
+        return productName.includes(searchTerm) ||
+          category.includes(searchTerm);
+      });
       setFilteredProducts(filtered);
     }, 300),
     [products]
@@ -90,16 +109,33 @@ const Dashboard = () => {
   // Handle quantity change and calculate total price during product update
   const handleQuantityChange = (e) => {
     const quantity = parseInt(e.target.value) || 0;
-    const totalPrice = quantity * updatedProduct.price; 
+    const totalPrice = quantity * updatedProduct.price;  // Hitung total harga baru
     setUpdatedProduct({ ...updatedProduct, quantity, totalPrice });
   };
 
   const handlePriceChange = (e) => {
     const price = parseInt(e.target.value) || 0;
-    const totalPrice = updatedProduct.quantity * price;  
+    const totalPrice = updatedProduct.quantity * price;  // Hitung total harga baru
     setUpdatedProduct({ ...updatedProduct, price, totalPrice });
   };
 
+  // Handle image file selection
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file); // Save the file object
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Trigger file input click
+  const handleChangeImageClick = () => {
+    fileInputRef.current?.click();
+  };
 
 
   // Handle product update after editing
@@ -108,34 +144,66 @@ const Dashboard = () => {
       setIsUpdating(true); // Set loading state
       const token = localStorage.getItem('token');
 
-      const updatedData = {
-        ...updatedProduct,
-        date: new Date().toISOString() // Set tanggal terbaru saat update
-      };
+      // Create FormData object to handle file upload
+      const formData = new FormData();
 
-      await axios.put(`/products/${currentProduct._id}`, updatedProduct, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Add all product fields to FormData
+      formData.append('productName', updatedProduct.productName);
+      formData.append('category', updatedProduct.category);
+      formData.append('quantity', updatedProduct.quantity);
+      formData.append('price', updatedProduct.price);
+      formData.append('totalPrice', updatedProduct.totalPrice);
+      formData.append('date', new Date().toISOString());
+
+      // Only append new image if one was selected
+      if (selectedFile) {
+        formData.append('image', selectedFile);
+      }
+
+      // Make PUT request with FormData
+      const response = await axios.put(
+        `/products/${currentProduct._id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          },
+        }
+      );
+
+      // Update local state with response data
+      const updatedProductData = response.data;
 
       // Update produk di state frontend
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
-          product._id === currentProduct._id ? { ...product, ...updatedData } : product
+          product._id === currentProduct._id ? updatedProductData : product
         )
       );
 
       setFilteredProducts((prevFilteredProducts) =>
         prevFilteredProducts.map((product) =>
-          product._id === currentProduct._id ? { ...product, ...updatedData } : product
+          product._id === currentProduct._id ? updatedProductData : product
         )
       );
-
+      // Reset states
       setIsEditModalOpen(false);
+      setPreviewImage(null);
+      setSelectedFile(null);
+      setCurrentProduct(null);
+      setUpdatedProduct({});
+
+
       fetchData(token); // Refresh data setelah update
     } catch (error) {
-      setError('Terjadi kesalahan saat mengupdate produk.');
+      console.error('Update error:', error);
+      setError(
+        error.response?.data?.message ||
+        'Terjadi kesalahan saat mengupdate produk.'
+      );
     } finally {
-      setIsUpdating(false); // Reset loading state
+      setIsUpdating(false);
     }
   };
 
@@ -163,11 +231,21 @@ const Dashboard = () => {
     }
   };
 
+  useEffect(() => {
+    if (isEditModalOpen && currentProduct) {
+      setPreviewImage(currentProduct.image);
+      setSelectedFile(null);
+    }
+  }, [isEditModalOpen, currentProduct]);
 
   // Render loading state
   if (isLoading) {
-    return <div className="loading">Memuat data...</div>;
+    return <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />;
   }
+
+  const formatPrice = (price) => {
+    return price ? price.toLocaleString() : '0';
+  };
 
   // Render error state
   if (error) {
@@ -177,17 +255,17 @@ const Dashboard = () => {
   return (
     <div>
       {/* Navbar with title and user actions */}
-      <nav className="bg-slate-700 shadow-lg">
+      <nav className=" dark:bg-gray-900 shadow-lg">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Layout className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-bold text-white">Management Product</span>
+              <span className="ml-2 text-xl font-bold text-gray-500 dark:text-white">Management Product</span>
             </div>
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/home')}
-                className="flex items-center text-white hover:text-gray-400"
+                className="flex items-center text-gray-500 dark:text-white hover:text-gray-400"
               >
                 <ArrowLeft className="h-5 w-5 mr-1" />
                 Back to Home
@@ -196,7 +274,8 @@ const Dashboard = () => {
           </div>
         </div>
       </nav>
-      <div className="dashboard-container p-5">
+
+      <div className="dashboard-container p-5 dark:bg-gray-900 text-black ">
         {/* Search input and table header */}
         <input
           type="text"
@@ -207,8 +286,8 @@ const Dashboard = () => {
         />
 
         {/* Table with product data */}
-        <table>
-          <thead>
+        <table className='bg-gray-200'>
+          <thead className='bg-gray-200'>
             <tr>
               <th
                 className='text-center'>
@@ -276,8 +355,12 @@ const Dashboard = () => {
                 <td className='text-center'>{product.productName}</td>
                 <td className='text-center'>{product.category}</td>
                 <td className='text-center'>{product.quantity}</td>
-                <td className='text-center'>Rp {product.price.toLocaleString()}</td>
-                <td className='text-center'>Rp {product.totalPrice.toLocaleString()}</td>
+                <td className='text-center'>
+                  Rp {formatPrice(product.totalPrice)}
+                </td>
+                <td className='text-center'>
+                  {product.date ? new Date(product.date).toLocaleDateString() : '-'}
+                </td>
                 <td className='text-center'>{new Date(product.date).toLocaleDateString()}</td>
                 <td>
                   {product.image && (
@@ -314,6 +397,40 @@ const Dashboard = () => {
             <div className="modal">
               <div className="modal-content">
                 <h2 className="text-center text-xl mb-4">Edit Produk</h2>
+
+                {/* Image Preview Section */}
+                <div className="form-group">
+                  <label>Gambar Produk</label>
+                  <div className="relative w-full h-64 mb-4 group">
+                    <img
+                      src={previewImage || currentProduct.image || '/placeholder-image.jpg'}
+                      alt="Product preview"
+                      className="w-full h-full object-contain border rounded-lg"
+                    />
+
+                    {/* Hover Overlay with Change Picture Button */}
+                    <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center rounded-lg">
+                      <button
+                        onClick={handleChangeImageClick}
+                        className="bg-white text-gray-800 px-4 py-2 rounded-lg flex items-center gap-2 z-1000 hover:bg-red-500"
+                      >
+                        <Camera className="h-5 w-5" />
+                        Change Picture
+                      </button>
+                    </div>
+
+                    {/* Hidden File Input */}
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageChange}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+
+                {/* Existing Form Fields */}
                 <div className="form-group">
                   <label>Nama Produk</label>
                   <input
@@ -349,9 +466,9 @@ const Dashboard = () => {
                 <div className="form-actions">
                   <button className="button button-outline" onClick={handleUpdateProduct} disabled={isUpdating}>
                     {isUpdating ? (
-                      <>
+                      <div className='mr-4'>
                         <i className="fas fa-spinner fa-spin"></i> Updating...
-                      </>
+                      </div>
                     ) : (
                       'Update'
                     )}
@@ -384,4 +501,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboard; 
