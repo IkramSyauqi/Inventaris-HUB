@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './dashboard.css';
 import axios from 'axios';
-import LoadingScreen from './components/loadingScreen';
 import { Layout, ArrowLeft, Edit, Trash2, UserCircle, ShieldCheckIcon, Mail, Settings2Icon, } from 'lucide-react';
 
 const DashboardUser = () => {
@@ -90,7 +89,6 @@ const DashboardUser = () => {
         }
     };
 
-    if (isLoading) return <LoadingScreen />;
     if (error) return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
 
     // Tambahkan pengecekan array sebelum mapping

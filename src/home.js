@@ -74,16 +74,16 @@ const Home = () => {
                 <div className="grid md:grid-cols-2 gap-6">
                     {/* User Dashboard Card */}
                     <div
-                        onClick={() => handleNavigation('/profile')}
+                        onClick={() => handleNavigation('/dashboard-user')}
                         className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl transition-shadow cursor-pointer"
                     >
                         <div className="flex items-center justify-center mb-4">
                             <User className="h-16 w-16 text-blue-600 dark:text-blue-400" />
                         </div>
-                        <h2 className="text-xl font-semibold text-center text-gray-900 dark:text-white">
+                        <h2 className="text-xl font-semibold text-center text-gray-900">
                             User Management
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-300 text-center mt-2">
+                        <p className="text-gray-700 text-center mt-2">
                             Manage user accounts, roles, and permissions
                         </p>
                     </div>
@@ -97,10 +97,10 @@ const Home = () => {
                         <div className="flex items-center justify-center mb-4">
                             <Package className="h-16 w-16 text-green-600 dark:text-green-400" />
                         </div>
-                        <h2 className="text-xl font-semibold text-center text-gray-900 dark:text-white">
+                        <h2 className="text-xl font-semibold text-center text-gray-900">
                             Product Management
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-300 text-center mt-2">
+                        <p className="text-gray-700 text-center mt-2">
                             Manage inventory, products, and categories
                         </p>
                     </div>

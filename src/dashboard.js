@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import './dashboard.css';
 import axios from 'axios';
 
-import LoadingScreen from './components/loadingScreen';
 import { useNavigate } from 'react-router-dom';
 import debounce from 'lodash/debounce';
 import {
@@ -38,7 +37,7 @@ const Dashboard = () => {
       const response = await axios.get('/products', {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       if (response.data && response.data.products && Array.isArray(response.data.products)) {
         setProducts(response.data.products);
         setFilteredProducts(response.data.products);
@@ -113,7 +112,7 @@ const Dashboard = () => {
     const totalPrice = quantity * updatedProduct.price;  // Hitung total harga baru
     setUpdatedProduct({ ...updatedProduct, quantity, totalPrice });
   };
-
+  
   const handlePriceChange = (e) => {
     const price = parseInt(e.target.value) || 0;
     const totalPrice = updatedProduct.quantity * price;  // Hitung total harga baru
@@ -144,23 +143,23 @@ const Dashboard = () => {
     try {
       setIsUpdating(true); // Set loading state
       const token = localStorage.getItem('token');
-
+  
       // Create FormData object to handle file upload
       const formData = new FormData();
-
+  
       // Add all product fields to FormData
       formData.append('productName', updatedProduct.productName);
       formData.append('category', updatedProduct.category);
       formData.append('quantity', updatedProduct.quantity);
       formData.append('price', updatedProduct.price);
-      formData.append('totalPrice', updatedProduct.totalPrice);
+      formData.append('totalPrice', updatedProduct.totalPrice); // Total harga yang baru dihitung
       formData.append('date', new Date().toISOString());
-
+  
       // Only append new image if one was selected
       if (selectedFile) {
         formData.append('image', selectedFile);
       }
-
+  
       // Make PUT request with FormData
       const response = await axios.put(
         `/products/${currentProduct._id}`,
@@ -168,34 +167,34 @@ const Dashboard = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
-
+  
       // Update local state with response data
       const updatedProductData = response.data;
-
+  
       // Update produk di state frontend
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
           product._id === currentProduct._id ? updatedProductData : product
         )
       );
-
+  
       setFilteredProducts((prevFilteredProducts) =>
         prevFilteredProducts.map((product) =>
           product._id === currentProduct._id ? updatedProductData : product
         )
       );
+      
       // Reset states
       setIsEditModalOpen(false);
       setPreviewImage(null);
       setSelectedFile(null);
       setCurrentProduct(null);
       setUpdatedProduct({});
-
-
+  
       fetchData(token); // Refresh data setelah update
     } catch (error) {
       console.error('Update error:', error);
@@ -207,7 +206,6 @@ const Dashboard = () => {
       setIsUpdating(false);
     }
   };
-
 
   // Handle product deletion confirmation
   const handleDeleteConfirmation = (product) => {
@@ -239,10 +237,6 @@ const Dashboard = () => {
     }
   }, [isEditModalOpen, currentProduct]);
 
-  // Render loading state
-  if (isLoading) {
-    return <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />;
-  }
 
   const formatPrice = (price) => {
     return price ? price.toLocaleString() : '0';
@@ -357,10 +351,10 @@ const Dashboard = () => {
                 <td className='text-center'>{product.category}</td>
                 <td className='text-center'>{product.quantity}</td>
                 <td className='text-center'>
-                  Rp {formatPrice(product.totalPrice)}
+                  Rp {(product.price || 0).toLocaleString()}
                 </td>
                 <td className='text-center'>
-                  {product.date ? new Date(product.date).toLocaleDateString() : '-'}
+                  Rp {(product.totalPrice || 0).toLocaleString()}
                 </td>
                 <td className='text-center'>{new Date(product.date).toLocaleDateString()}</td>
                 <td>
@@ -507,4 +501,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

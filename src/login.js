@@ -39,7 +39,7 @@ const Login = () => {
           <div className="card dark:bg-zinc-200">
           <h1 className='text-center text-gray-950'>INVENTARIS HUB</h1>
 
-            <div className="card-body dark:bg-gray-900 border-2 border-white rounded-lg">
+            <div className="card-body text-black border-t-2 border-black">
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label htmlFor="username" className="form-label">Username</label>
